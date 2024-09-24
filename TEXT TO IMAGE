@@ -1,0 +1,30 @@
+from flask import Flask, request, send_file
+from PIL import Image, ImageDraw, ImageFont
+import io
+
+app = Flask(__name__)
+
+@app.route('/text-to-image', methods=['POST'])
+def text_to_image():
+    
+    data = request.json
+    text = data.get('text', '')
+
+    
+    image = Image.new('RGB', (800, 200), color='white')
+    draw = ImageDraw.Draw(image)
+
+
+    font = ImageFont.load_default()
+
+    draw.text((10, 80), text, fill='black', font=font)
+
+    
+    img_io = io.BytesIO()
+    image.save(img_io, 'PNG')
+    img_io.seek(0)
+
+    return send_file(img_io, mimetype='image/png')
+
+if __name__ == '__main__':
+    app.run(debug=True)
